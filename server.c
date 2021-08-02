@@ -1,11 +1,21 @@
-#include <unistd.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
+/*   Updated: 2021/08/02 13:41:57 by wlo              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include <stdio.h>
-
-int state = 0;
 
 void	ft_putchar(char c)
 {
@@ -43,48 +53,98 @@ void	ft_putstr(char *s)
 	write(1, s, i);
 }
 
-void	handler(int sigtype)
+int exponentInt(int n)
 {
-	printf("here");
-	if (sigtype == SIGUSR1)
-		printf("SIGUSR1");
-	else
+    int i;
+	int result;
+
+	i = 1;
+	result = 2;
+	while (i < n)
 	{
-		printf("SIGUSR2");
+		result = result*2;
+		++i;
 	}
+	if (n == 0)
+		return (1);
+    return result;
 }
 
+int convertToDecimal(char *s)
+{
+	int i;
+	int num;
+
+	i = 0;
+	num = 0;
+	while(s[i])
+	{
+		if (s[i] != '0')
+			num = exponentInt(7-i) + num;
+		i++;
+	}
+	return (num);
+}
+
+void handler_new(int signum, siginfo_t *siginfo, void *context)
+{
+	static int	i = 0;
+	static char ch[9];
+	char		word;
+	pid_t pid;
+	
+	ch[8] = '\0';
+	if (signum == SIGUSR1)
+	{
+		ch[i] = '1';
+		++i;
+	}
+	if (signum == SIGUSR2)
+	{
+		ch[i] = '0';
+		++i;
+	}
+	if (i == 8)
+	{
+		word = convertToDecimal(ch);
+		write(1, &word, 1);
+		if (word == 0)
+		{
+			pid = siginfo->si_pid;
+			printf("si_pid: %d\n", pid);
+			kill(pid, SIGINT);
+		}
+		i = 0;
+	}
+}
 
 int	main()
 {
 	pid_t pid;
 	struct sigaction action;
-	struct sigaction action2;
-	int i;
+	siginfo_t siginfo;	
 
 	pid = getpid();
 	ft_putstr("PID :");
 	ft_putnbr((int)pid);
 	ft_putstr("\n");
-	// action1.sa_handler = &handler;
-	// //sigemptyset(&action1.sa_mask);
-	// //sigaddset(&action1.sa_mask, SIGINT);
-	// action2.sa_handler = &handler;
-	// //sigaddset(&action2.sa_mask, SIGINT);
-	// //sigemptyset(&action2.sa_mask);
-	// //action.sa_flags = SA_RESTART;
-	// 	sigaction(SIGUSR1 , &action1, NULL);
-	// 	sigaction(SIGUSR2 , &action2, NULL);
-	// 	int ret = pause();
-	//kill(pid, SIGCONT);
-	//sleep(1);
+
 	action.sa_flags = SA_SIGINFO;
-	action.sa_handler = &handler;
-	sigaction(SIGUSR1, &action, 0);
-	sigaction(SIGUSR2, &action, 0);
+	action.sa_sigaction = handler_new;
+	sigemptyset(&action.sa_mask);
+	sigaddset(&action.sa_mask, SIGUSR1);
+	sigaddset(&action.sa_mask, SIGUSR2);
+	if (sigaction(SIGUSR1, &action, 0) < 0)
+	{
+		ft_putstr("sigaction1 error!");
+		return 1;
+	};
+	if (sigaction(SIGUSR2, &action, 0) < 0)
+	{
+		ft_putstr("sigaction2 error!");
+		return 1;
+	};
 	while (1)
 		pause();
-	return (0);
-	printf("after one seconce");
 	return (0);
 }
