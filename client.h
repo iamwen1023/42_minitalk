@@ -3,11 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   client.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wlo <marvin@42.fr>                         +#+  +:+       +#+        */
+/*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:49:09 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 10:49:11 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/02 13:55:22 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef CLIENT_H
+# define CLIENT_H
 
+# include <signal.h>
+# include <sys/types.h>
+# include <unistd.h>
+# include <stdlib.h>
+
+#endif

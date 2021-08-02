@@ -6,15 +6,11 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 13:41:57 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/02 14:18:41 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
-
+#include "server.h"
 #include <stdio.h>
 
 void	ft_putchar(char c)
@@ -86,11 +82,73 @@ int convertToDecimal(char *s)
 	return (num);
 }
 
+void	handle_message(char *message, int id)
+{
+	int i;
+	
+	while (*message)
+	{
+		i = 0;
+		while( i < 8)
+		{
+			if ((*message) & (0x80))
+			{
+				kill(id, SIGUSR1);
+				printf("1");
+			}
+			else
+			{
+				kill(id, SIGUSR2);
+				printf("0");
+			}
+			*message = *message << 1;
+			usleep(15);
+			++i;
+		}
+		printf("\n");
+		++message;
+	}
+}
+
+int	ft_strlen(const char *s)
+{
+	int	length;
+
+	length = 0;
+	while (*s)
+	{
+		++length;
+		s++;
+	}
+	return (length);
+}
+
+char	*ft_strdup(const char *s)
+{
+	int	len;
+	int	i;
+	char	*arr;
+
+	len = ft_strlen(s);
+	arr = (char *)malloc((len + 1) * sizeof(char));
+	if (!arr)
+		return (0);
+	i = 0;
+	while (i < len)
+	{
+		arr[i] = s[i];
+		i++;
+	}
+	arr[i] = '\0';
+	return (arr);
+}
+
 void handler_new(int signum, siginfo_t *siginfo, void *context)
 {
 	static int	i = 0;
 	static char ch[9];
 	char		word;
+	char	*re_message;
 	pid_t pid;
 	
 	ch[8] = '\0';
@@ -112,7 +170,8 @@ void handler_new(int signum, siginfo_t *siginfo, void *context)
 		{
 			pid = siginfo->si_pid;
 			printf("si_pid: %d\n", pid);
-			kill(pid, SIGINT);
+			re_message = ft_strdup("recerived from server!");
+			handle_message(re_message, pid);
 		}
 		i = 0;
 	}
@@ -128,7 +187,6 @@ int	main()
 	ft_putstr("PID :");
 	ft_putnbr((int)pid);
 	ft_putstr("\n");
-
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = handler_new;
 	sigemptyset(&action.sa_mask);
