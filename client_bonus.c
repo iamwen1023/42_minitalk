@@ -6,7 +6,7 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:49:01 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:39:34 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/02 18:19:50 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	main(int argc, char *argv[])
 	sigaction(SIGUSR2, &act, 0);
 	if (sigaction(SIGUSR1, &act, 0) < 0 || sigaction(SIGUSR2, &act, 0) < 0)
 	{
-		ft_putstr("sigaction2 error!");
+		ft_putstr("sigaction error!");
 		return (1);
 	}
 	while (1)
