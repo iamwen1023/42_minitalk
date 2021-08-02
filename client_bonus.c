@@ -1,16 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:48:50 by wlo              ###   ########.fr       */
+/*   Created: 2021/08/02 10:49:01 by wlo               #+#    #+#             */
+/*   Updated: 2021/08/02 17:39:34 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.h"
+#include "client.h"
+
+void	message_end(int id)
+{
+	int	i;
+
+	i = 0;
+	while (i < 8)
+	{
+		kill(id, SIGUSR2);
+		++i;
+		usleep(15);
+	}
+}
 
 void	handle_message(char *message, int id)
 {
@@ -33,14 +46,12 @@ void	handle_message(char *message, int id)
 	}
 }
 
-void	handler_new(int signum, siginfo_t *siginfo, void *context)
+void	handler_new(int signum)
 {
 	static int	i = 0;
 	static char	ch[9];
 	char		word;
 
-	(void)context;
-	(void)siginfo;
 	ch[8] = '\0';
 	if (signum == SIGUSR1)
 	{
@@ -62,30 +73,30 @@ void	handler_new(int signum, siginfo_t *siginfo, void *context)
 
 struct sigaction	settingSigation(struct sigaction action)
 {
-	action.sa_flags = SA_SIGINFO;
 	sigemptyset(&action.sa_mask);
 	sigaddset(&action.sa_mask, SIGUSR1);
 	sigaddset(&action.sa_mask, SIGUSR2);
 	return (action);
 }
 
-int	main(void)
+int	main(int argc, char *argv[])
 {
-	pid_t				pid;
-	struct sigaction	action;	
+	char				*message;
+	struct sigaction	act;
 
-	pid = getpid();
-	ft_putstr("PID :");
-	ft_putnbr((int)pid);
-	ft_putstr("\n");
-	action.sa_sigaction = handler_new;
-	action = settingSigation(action);
-	if (sigaction(SIGUSR1, &action, 0) < 0)
+	if (argc != 3)
 	{
-		ft_putstr("sigaction1 error!");
+		ft_putstr("Please enter a PID and a message\n");
 		return (1);
 	}
-	if (sigaction(SIGUSR2, &action, 0) < 0)
+	message = argv[2];
+	handle_message(message, ft_atoi(argv[1]));
+	message_end(ft_atoi(argv[1]));
+	act.sa_handler = handler_new;
+	act = settingSigation(act);
+	sigaction(SIGUSR1, &act, 0);
+	sigaction(SIGUSR2, &act, 0);
+	if (sigaction(SIGUSR1, &act, 0) < 0 || sigaction(SIGUSR2, &act, 0) < 0)
 	{
 		ft_putstr("sigaction2 error!");
 		return (1);

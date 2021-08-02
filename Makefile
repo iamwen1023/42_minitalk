@@ -1,42 +1,40 @@
-SRCS_S		= ft_memset.c ft_bzero.c ft_memcpy.c ft_memccpy.c \
-            ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c
-SRCS_C		= ft_memset.c ft_bzero.c ft_memcpy.c ft_memccpy.c \
-BONUS_SRCS	= ft_lstnew.c ft_lstadd_front.c ft_lstsize.c \
-			ft_lstlast.c ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c \
-			ft_lstiter.c ft_lstmap.c
-INCS		= libft.h
-OBJS        = $(SRCS:.c=.o)
-OBJS_BONUS	= $(BONUS_SRCS:.c=.o)
+SRCS_S			= server.c server_utils.c
+SRCS_C			= client.c client_utils.c
+BONUS_SRCS_S	= server_bonus.c server_utils_bonus.c server_utils_bonus_2.c
+BONUS_SRCS_C	= client_bonus.c client_utils.c
+INCS_S			= server.h 
+INCS_C			= client.h
+BONUS_INCS_C	= client_bonus.h 
+BONUS_INCS_S	= server_bonus.h
+OBJS_S       	= $(SRCS_S:.c=.o)
+OBJS_C       	= $(SRCS_C:.c=.o)
+OBJS_BONUS_S	= $(BONUS_SRCS_S:.c=.o)
+OBJS_BONUS_C	= $(BONUS_SRCS_C:.c=.o)
+NAME			= server
+CLI			= client
 CFLAGS		= -Wall -Wextra -Werror
-NAME		= libft.a
-CC		= cc -c
+CC		= gcc
 RM		= rm -f
-AR		= ar rcs 
 
-$(NAME):	$(OBJS) $(INCS)
-			$(AR) $(NAME) $(OBJS)
-		
+.c.o:
+		$(CC) $(CFLAGS) -c $< -o $(<:.c=.o)
+$(NAME):	$(OBJS_S) $(OBJS_C)
+		$(CC) $(CFLAGS) $(OBJS_S) -o $(NAME) -I $(INCS_S)
+		$(CC) $(CFLAGS) $(OBJS_C) -o $(CLI) -I $(INCS_C)
 all:	$(NAME)
 
-bonus:	$(OBJS_BONUS) $(OBJS) $(INCS)
-		@touch bonus
-		$(AR) $(NAME) $(OBJS) $(OBJS_BONUS)
+bonus:	fclean $(OBJS_BONUS_S) $(OBJS_BONUS_C)
+		$(CC) $(CFLAGS) $(OBJS_BONUS_S) -o $(NAME) -I $(BONUS_INCS_S)
+		$(CC) $(CFLAGS) $(OBJS_BONUS_C) -o $(CLI) -I $(BONUS_INCS_C)
 
-%.o: %.c
-		$(CC) -o $@ $< $(CFLAGS)
-so:
-		$(CC) -fPIC $(CFLAGS) $(SRCS)
-		gcc -shared -o libft.so $(OBJS)
-cleanso:
-		rm *.o
-		rm -f libft.so
 clean:
-		$(RM) $(OBJS) bonus
+		$(RM) $(OBJS_S) $(OBJS_C) $(OBJS_BONUS_S) $(OBJS_BONUS_C)
 
 fclean:		clean
-		$(RM) $(NAME)
+		$(RM) $(NAME) $(CLI)
 
 re:		fclean all
 
+bonus: all
 
-.PHONY: 	all clean fclean re .c.o cleanso so
+.PHONY: 	all clean fclean re .c.o bonus

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   server_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:48:50 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/02 17:53:19 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.h"
+#include "server_bonus.h"
 
 void	handle_message(char *message, int id)
 {
@@ -33,6 +33,17 @@ void	handle_message(char *message, int id)
 	}
 }
 
+void	messageToClient(siginfo_t *siginfo)
+{
+	pid_t		pid;
+	char		*re_message;
+
+	pid = siginfo->si_pid;
+	re_message = ft_strdup("Recerived from server!");
+	handle_message(re_message, pid);
+	free(re_message);
+}
+
 void	handler_new(int signum, siginfo_t *siginfo, void *context)
 {
 	static int	i = 0;
@@ -40,7 +51,6 @@ void	handler_new(int signum, siginfo_t *siginfo, void *context)
 	char		word;
 
 	(void)context;
-	(void)siginfo;
 	ch[8] = '\0';
 	if (signum == SIGUSR1)
 	{
@@ -56,6 +66,8 @@ void	handler_new(int signum, siginfo_t *siginfo, void *context)
 	{
 		word = convertToDecimal(ch);
 		write(1, &word, 1);
+		if (word == 0)
+			messageToClient(siginfo);
 		i = 0;
 	}
 }
@@ -72,7 +84,7 @@ struct sigaction	settingSigation(struct sigaction action)
 int	main(void)
 {
 	pid_t				pid;
-	struct sigaction	action;	
+	struct sigaction	action;
 
 	pid = getpid();
 	ft_putstr("PID :");
