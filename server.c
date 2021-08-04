@@ -6,13 +6,13 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 12:09:48 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 15:45:01 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-void	handle_message(int signum, siginfo_t *siginfo, void *context)
+void	handle_sig(int signum, siginfo_t *siginfo, void *context)
 {
 	static int	i = 0;
 	static char	word = 0;
@@ -20,7 +20,7 @@ void	handle_message(int signum, siginfo_t *siginfo, void *context)
 	(void)context;
 	(void)siginfo;
 	if (signum == SIGUSR1)
-		word = (1<<(7 - i)) + word;
+		word = (1 << (7 - i)) + word;
 	++i;
 	if (i == 8)
 	{
@@ -48,7 +48,7 @@ int	main(void)
 	ft_putstr("PID :");
 	ft_putnbr((int)pid);
 	ft_putstr("\n");
-	action.sa_sigaction = handle_message;
+	action.sa_sigaction = handle_sig;
 	action = settingSigation(action);
 	if (sigaction(SIGUSR1, &action, 0) < 0)
 	{

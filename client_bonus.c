@@ -6,7 +6,7 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:49:01 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 14:39:36 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 15:41:47 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	send_message(char *message, int id)
 	}
 }
 
-void	receive_message_service(int signum, siginfo_t *siginfo, void *context)
+void	sig_serv(int signum, siginfo_t *siginfo, void *context)
 {
 	(void)context;
 	(void)siginfo;

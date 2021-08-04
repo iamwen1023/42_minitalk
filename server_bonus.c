@@ -6,7 +6,7 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 15:29:36 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 15:45:43 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	send_message(int signum, siginfo_t *siginfo, void *context)
 	(void)context;
 	(void)siginfo;
 	if (signum == SIGUSR1)
-		word = (1<<(7 - i)) + word;
+		word = (1 << (7 - i)) + word;
 	++i;
 	if (i == 8)
 	{
