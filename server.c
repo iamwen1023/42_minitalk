@@ -6,57 +6,27 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:48:50 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 12:09:48 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-void	handle_message(char *message, int id)
-{
-	int	i;
-
-	while (*message)
-	{
-		i = 0;
-		while (i < 8)
-		{
-			if ((*message) & (0x80))
-				kill(id, SIGUSR1);
-			else
-				kill(id, SIGUSR2);
-			*message = *message << 1;
-			usleep(15);
-			++i;
-		}
-		++message;
-	}
-}
-
-void	handler_new(int signum, siginfo_t *siginfo, void *context)
+void	handle_message(int signum, siginfo_t *siginfo, void *context)
 {
 	static int	i = 0;
-	static char	ch[9];
-	char		word;
+	static char	word = 0;
 
 	(void)context;
 	(void)siginfo;
-	ch[8] = '\0';
 	if (signum == SIGUSR1)
-	{
-		ch[i] = '1';
-		++i;
-	}
-	if (signum == SIGUSR2)
-	{
-		ch[i] = '0';
-		++i;
-	}
+		word = (1<<(7 - i)) + word;
+	++i;
 	if (i == 8)
 	{
-		word = convertToDecimal(ch);
 		write(1, &word, 1);
 		i = 0;
+		word = 0;
 	}
 }
 
@@ -78,7 +48,7 @@ int	main(void)
 	ft_putstr("PID :");
 	ft_putnbr((int)pid);
 	ft_putstr("\n");
-	action.sa_sigaction = handler_new;
+	action.sa_sigaction = handle_message;
 	action = settingSigation(action);
 	if (sigaction(SIGUSR1, &action, 0) < 0)
 	{

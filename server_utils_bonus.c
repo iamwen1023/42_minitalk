@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_utils_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wlo <marvin@42.fr>                         +#+  +:+       +#+        */
+/*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 17:57:47 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:59:52 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 14:00:02 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,37 +46,4 @@ void	ft_putstr(char *s)
 	while (s[i] != '\0')
 		i++;
 	write(1, s, i);
-}
-
-int	exponentInt(int n)
-{
-	int	i;
-	int	result;
-
-	i = 1;
-	result = 2;
-	while (i < n)
-	{
-		result = result * 2;
-		++i;
-	}
-	if (n == 0)
-		return (1);
-	return (result);
-}
-
-int	convertToDecimal(char *s)
-{
-	int	i;
-	int	num;
-
-	i = 0;
-	num = 0;
-	while (s[i])
-	{
-		if (s[i] != '0')
-			num = exponentInt(7 - i) + num;
-		i++;
-	}
-	return (num);
 }

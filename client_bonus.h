@@ -6,7 +6,7 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:49:09 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:42:07 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 13:53:44 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,8 @@
 
 int					ft_atoi(const char *str);
 void				ft_putstr(char *s);
-int					exponentInt(int n);
-int					convertToDecimal(char *s);
 void				message_end(int id);
-void				handle_message(char *message, int id);
-void				handler_new(int signum);
-struct sigaction	settingSigation(struct sigaction action);
+void				send_message(char *message, int id);
+void				receive_message_service(int signum, siginfo_t *siginfo, void *context);
 
 #endif

@@ -1,6 +1,6 @@
 SRCS_S			= server.c server_utils.c
 SRCS_C			= client.c client_utils.c
-BONUS_SRCS_S	= server_bonus.c server_utils_bonus.c server_utils_bonus_2.c
+BONUS_SRCS_S	= server_bonus.c server_utils_bonus.c
 BONUS_SRCS_C	= client_bonus.c client_utils.c
 INCS_S			= server.h 
 INCS_C			= client.h

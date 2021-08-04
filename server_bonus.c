@@ -6,69 +6,32 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:53:19 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 14:40:09 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server_bonus.h"
 
-void	handle_message(char *message, int id)
-{
-	int	i;
-
-	while (*message)
-	{
-		i = 0;
-		while (i < 8)
-		{
-			if ((*message) & (0x80))
-				kill(id, SIGUSR1);
-			else
-				kill(id, SIGUSR2);
-			*message = *message << 1;
-			usleep(15);
-			++i;
-		}
-		++message;
-	}
-}
-
-void	messageToClient(siginfo_t *siginfo)
-{
-	pid_t		pid;
-	char		*re_message;
-
-	pid = siginfo->si_pid;
-	re_message = ft_strdup("Recerived from server!");
-	handle_message(re_message, pid);
-	free(re_message);
-}
-
-void	handler_new(int signum, siginfo_t *siginfo, void *context)
+void	send_message(int signum, siginfo_t *siginfo, void *context)
 {
 	static int	i = 0;
-	static char	ch[9];
-	char		word;
+	static char	word = 0;
 
 	(void)context;
-	ch[8] = '\0';
+	(void)siginfo;
 	if (signum == SIGUSR1)
-	{
-		ch[i] = '1';
-		++i;
-	}
-	if (signum == SIGUSR2)
-	{
-		ch[i] = '0';
-		++i;
-	}
+		word = (1<<(7 - i)) + word;
+	++i;
 	if (i == 8)
 	{
-		word = convertToDecimal(ch);
 		write(1, &word, 1);
 		if (word == 0)
-			messageToClient(siginfo);
+		{	
+			usleep(100);
+			kill(siginfo->si_pid, SIGUSR2);
+		}
 		i = 0;
+		word = 0;
 	}
 }
 
@@ -87,10 +50,10 @@ int	main(void)
 	struct sigaction	action;
 
 	pid = getpid();
-	ft_putstr("PID :");
+	ft_putstr("PID : ");
 	ft_putnbr((int)pid);
 	ft_putstr("\n");
-	action.sa_sigaction = handler_new;
+	action.sa_sigaction = send_message;
 	action = settingSigation(action);
 	if (sigaction(SIGUSR1, &action, 0) < 0)
 	{

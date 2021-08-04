@@ -6,7 +6,7 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:49:01 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 18:19:50 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 14:39:36 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,62 +21,43 @@ void	message_end(int id)
 	{
 		kill(id, SIGUSR2);
 		++i;
-		usleep(15);
+		usleep(100);
 	}
 }
 
-void	handle_message(char *message, int id)
+void	send_message(char *message, int id)
 {
 	int	i;
+	int	ret;
 
 	while (*message)
 	{
-		i = 0;
-		while (i < 8)
+		i = -1;
+		while (++i < 8)
 		{
 			if ((*message) & (0x80))
-				kill(id, SIGUSR1);
+				ret = kill(id, SIGUSR1);
 			else
-				kill(id, SIGUSR2);
+				ret = kill(id, SIGUSR2);
+			if (ret == -1)
+			{
+				ft_putstr("Error happens while sending sig");
+				exit(-1);
+			}
 			*message = *message << 1;
-			usleep(15);
-			++i;
+			usleep(100);
 		}
 		++message;
 	}
 }
 
-void	handler_new(int signum)
+void	receive_message_service(int signum, siginfo_t *siginfo, void *context)
 {
-	static int	i = 0;
-	static char	ch[9];
-	char		word;
-
-	ch[8] = '\0';
-	if (signum == SIGUSR1)
-	{
-		ch[i] = '1';
-		++i;
-	}
+	(void)context;
+	(void)siginfo;
 	if (signum == SIGUSR2)
-	{
-		ch[i] = '0';
-		++i;
-	}
-	if (i == 8)
-	{
-		word = convertToDecimal(ch);
-		write(1, &word, 1);
-		i = 0;
-	}
-}
-
-struct sigaction	settingSigation(struct sigaction action)
-{
-	sigemptyset(&action.sa_mask);
-	sigaddset(&action.sa_mask, SIGUSR1);
-	sigaddset(&action.sa_mask, SIGUSR2);
-	return (action);
+		ft_putstr("message from server!\n");
+	exit (0);
 }
 
 int	main(int argc, char *argv[])
@@ -89,16 +70,16 @@ int	main(int argc, char *argv[])
 		ft_putstr("Please enter a PID and a message\n");
 		return (1);
 	}
+	act.sa_sigaction = receive_message_service;
+	act.sa_flags = SA_SIGINFO;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIGUSR2);
 	message = argv[2];
-	handle_message(message, ft_atoi(argv[1]));
+	send_message(message, ft_atoi(argv[1]));
 	message_end(ft_atoi(argv[1]));
-	act.sa_handler = handler_new;
-	act = settingSigation(act);
-	sigaction(SIGUSR1, &act, 0);
-	sigaction(SIGUSR2, &act, 0);
-	if (sigaction(SIGUSR1, &act, 0) < 0 || sigaction(SIGUSR2, &act, 0) < 0)
+	if (sigaction(SIGUSR2, &act, 0) < 0)
 	{
-		ft_putstr("sigaction error!");
+		ft_putstr("sigaction2 error!");
 		return (1);
 	}
 	while (1)

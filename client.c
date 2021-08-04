@@ -6,7 +6,7 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:49:01 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/02 17:26:16 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/04 14:39:57 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,53 +21,34 @@ void	message_end(int id)
 	{
 		kill(id, SIGUSR2);
 		++i;
-		usleep(15);
+		usleep(100);
 	}
+	exit(0);
 }
 
-void	handle_message(char *message, int id)
+void	send_message(char *message, int id)
 {
 	int	i;
+	int	ret;
 
 	while (*message)
 	{
-		i = 0;
-		while (i < 8)
+		i = -1;
+		while (++i < 8)
 		{
 			if ((*message) & (0x80))
-				kill(id, SIGUSR1);
+				ret = kill(id, SIGUSR1);
 			else
-				kill(id, SIGUSR2);
+				ret = kill(id, SIGUSR2);
+			if (ret == -1)
+			{
+				ft_putstr("Error happens while sending sig to ser");
+				exit(-1);
+			}	
 			*message = *message << 1;
-			usleep(15);
-			++i;
+			usleep(100);
 		}
 		++message;
-	}
-}
-
-void	handler_new(int signum)
-{
-	static int	i = 0;
-	static char	ch[9];
-	char		word;
-
-	ch[8] = '\0';
-	if (signum == SIGUSR1)
-	{
-		ch[i] = '1';
-		++i;
-	}
-	if (signum == SIGUSR2)
-	{
-		ch[i] = '0';
-		++i;
-	}
-	if (i == 8)
-	{
-		word = convertToDecimal(ch);
-		write(1, &word, 1);
-		i = 0;
 	}
 }
 
@@ -81,9 +62,7 @@ int	main(int argc, char *argv[])
 		return (1);
 	}
 	message = argv[2];
-	handle_message(message, ft_atoi(argv[1]));
+	send_message(message, ft_atoi(argv[1]));
 	message_end(ft_atoi(argv[1]));
-	while (1)
-		pause();
 	return (0);
 }
