@@ -6,11 +6,10 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 17:42:53 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 15:42:20 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/06 11:58:45 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "client.h"
 #include "client_bonus.h"
 
 int	ft_atoi(const char *str)

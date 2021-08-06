@@ -6,15 +6,17 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 15:45:01 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/06 13:45:45 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
+char	g_phrase[2048];
 
 void	handle_sig(int signum, siginfo_t *siginfo, void *context)
 {
 	static int	i = 0;
+	static int	count = 0;
 	static char	word = 0;
 
 	(void)context;
@@ -24,10 +26,16 @@ void	handle_sig(int signum, siginfo_t *siginfo, void *context)
 	++i;
 	if (i == 8)
 	{
-		write(1, &word, 1);
+		g_phrase[count] = word;
 		i = 0;
+		++count;
+		if (word == 0 || count == 2048)
+		{
+			write(1, g_phrase, count);
+			count = 0;
+		}
 		word = 0;
-	}
+	}	
 }
 
 struct sigaction	settingSigation(struct sigaction action)

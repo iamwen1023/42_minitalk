@@ -6,15 +6,17 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:36 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 15:45:43 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/06 13:46:34 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server_bonus.h"
+char	g_phrase[2048];
 
-void	send_message(int signum, siginfo_t *siginfo, void *context)
+void	handle_sig(int signum, siginfo_t *siginfo, void *context)
 {
 	static int	i = 0;
+	static int	count = 0;
 	static char	word = 0;
 
 	(void)context;
@@ -24,13 +26,18 @@ void	send_message(int signum, siginfo_t *siginfo, void *context)
 	++i;
 	if (i == 8)
 	{
-		write(1, &word, 1);
+		g_phrase[count++] = word;
+		i = 0;
+		if (word == 0 || count == 2048)
+		{
+			write(1, g_phrase, count);
+			count = 0;
+		}
 		if (word == 0)
 		{	
-			usleep(100);
+			usleep(80);
 			kill(siginfo->si_pid, SIGUSR2);
 		}
-		i = 0;
 		word = 0;
 	}
 }
@@ -53,7 +60,7 @@ int	main(void)
 	ft_putstr("PID : ");
 	ft_putnbr((int)pid);
 	ft_putstr("\n");
-	action.sa_sigaction = send_message;
+	action.sa_sigaction = handle_sig;
 	action = settingSigation(action);
 	if (sigaction(SIGUSR1, &action, 0) < 0)
 	{

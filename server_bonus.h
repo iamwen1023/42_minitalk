@@ -6,7 +6,7 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 10:48:50 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 13:59:33 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/06 12:14:06 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 void				ft_putchar(char c);
 void				ft_putnbr(int n);
 void				ft_putstr(char *s);
-void				send_message(int signum, siginfo_t *siginfo, void *context);
+void				handle_sig(int signum, siginfo_t *siginfo, void *context);
 struct sigaction	settingSigation(struct sigaction action);
 
 #endif

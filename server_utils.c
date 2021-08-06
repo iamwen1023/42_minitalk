@@ -6,11 +6,12 @@
 /*   By: wlo <wlo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 17:54:55 by wlo               #+#    #+#             */
-/*   Updated: 2021/08/04 15:46:00 by wlo              ###   ########.fr       */
+/*   Updated: 2021/08/06 12:04:19 by wlo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
+#include "server_bonus.h"
 
 void	ft_putchar(char c)
 {
